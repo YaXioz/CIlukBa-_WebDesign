@@ -73,7 +73,7 @@ class PostController extends BaseController
         $tahun = date('Y', strtotime($tanggal));
         $timeline = $this->timeline->getTimeline(session()->get('id'), $tahun);
 
-        if (!$timeline) {
+        if ($timeline != null) {
             session()->setFlashdata(['_ci_validation_errors' => ['event_date' => 'Timeline untuk tanggal tersebut belum tersedia, mohon cek kembali.']]);
             return redirect()->to('')->withInput();
         }
@@ -142,7 +142,7 @@ class PostController extends BaseController
         $tahun = date('Y', strtotime($tanggal));
         $timeline = $this->timeline->getTimeline(session()->get('id'), $tahun);
 
-        if (!$timeline) {
+        if ($timeline != null) {
             session()->setFlashdata(['_ci_validation_errors' => ['event_date' => 'Timeline untuk tanggal tersebut belum tersedia, mohon cek kembali.']]);
             return redirect()->to('')->withInput();
         }
