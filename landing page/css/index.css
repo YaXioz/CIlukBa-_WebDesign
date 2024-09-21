@@ -8,8 +8,8 @@
 
 body {
     font-family: 'Montserrat';
-    background-color: #2d3a47; /* Warna background sesuai gambar */
-    color: #fff; /* Warna teks default */
+    background-color: #2d3a47; 
+    color: #fff; 
     height: 100vh;
     display: flex;
     justify-content: center;
