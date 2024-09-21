@@ -56,9 +56,4 @@ class Timeline extends Model
     {
         return $this->where(['user_id' => $user_id, 'year' => $year])->first();
     }
-
-    function getTimelineId($user_id, $year)
-    {
-        return $this->where(['user_id' => $user_id, 'year' => $year])->first()['id'];
-    }
 }
