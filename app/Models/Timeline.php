@@ -18,8 +18,8 @@ class Timeline extends Model
         'image_1',
         'image_2',
         'image_3',
-        'created_at',
-        'updated_at'
+        // 'created_at',
+        // 'updated_at'
     ];
 
     // protected bool $allowEmptyInserts = false;

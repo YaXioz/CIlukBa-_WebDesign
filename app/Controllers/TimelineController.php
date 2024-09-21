@@ -28,21 +28,25 @@ class TimelineController extends BaseController
     {
         $data = [
             'title' => 'title',
+            'errors' => session()->getFlashdata('_ci_validation_errors') ?? [],
         ];
-        return view('', $data);
+        return view('test', $data);
     }
 
     public function save()
     {
-        $this->validator->setRules(
+        $validation = service('validation');
+        $rule = $this->timeline->getTimeline(session()->get('id'), $this->request->getVar('year')) == null;
+        $validation->setRules(
             [
                 'year' => [
                     'required',
-                    static fn($value) => $this->timeline->getTimeline(session()->get('id'), $value) == null,
+                    // static fn($value) => $this->timeline->getTimeline(session()->get('id'), $value) == null,
+                    static fn() => $rule,
                 ],
-                'image_1' => 'required|is_image[image]|mime_in[image,image/jpg,image/jpeg,image/png,image/heic]',
-                'image_2' => 'required|is_image[image]|mime_in[image,image/jpg,image/jpeg,image/png,image/heic]',
-                'image_3' => 'required|is_image[image]|mime_in[image,image/jpg,image/jpeg,image/png,image/heic]',
+                'image_1' => 'required|is_image[image_1]|mime_in[image_1,image/jpg,image/jpeg,image/png,image/heic]',
+                'image_2' => 'required|is_image[image_2]|mime_in[image_2,image/jpg,image/jpeg,image/png,image/heic]',
+                'image_3' => 'required|is_image[image_3]|mime_in[image_3,image/jpg,image/jpeg,image/png,image/heic]',
             ],
             [
                 'year' => [
@@ -66,13 +70,18 @@ class TimelineController extends BaseController
                 ],
             ]
         );
-        if ($this->validator->run([
-            'year'   => $this->request->getVar('year'),
-            'image_1' => $this->request->getFile('image_1'),
-            'image_2' => $this->request->getFile('image_2'),
-            'image_3' => $this->request->getFile('image_3'),
-        ])) return redirect()->to('')->withInput();
 
+        $data = [
+            'year'   => $this->request->getVar('year'),
+            'image_1' => $this->request->getPost('image_1'),
+            'image_2' => $this->request->getPost('image_2'),
+            'image_3' => $this->request->getPost('image_3'),
+        ];
+        // return print "masuk";
+        // return $this->validator->run($data);
+        if (!$validation->run($data))
+            return redirect()->back()->withInput();
+        // return $validation->getErrors;
         // 1
         $imageFile1 = $this->request->getFile('image_1');
         $imageName1 = time() . '_' . $imageFile1->getRandomName();
@@ -83,18 +92,18 @@ class TimelineController extends BaseController
         $imageFile2->move('assets/img/timeline', $imageName2);
         // 3
         $imageFile3 = $this->request->getFile('image_3');
-        $imageName3 = time() . '_' . $imageFile3->getRandomName();
+        $imageName3 = $imageFile3->getRandomName();
         $imageFile3->move('assets/img/timeline', $imageName3);
 
         $this->timeline->save([
-            'user_id' => session()->get('id'),
+            'user_id' => 1,
             'year' => $this->request->getVar('year'),
             'image_1' => $imageName1,
             'image_2' => $imageName2,
             'image_3' => $imageName3,
         ]);
 
-        return redirect()->to('');
+        return redirect()->to('create');
     }
 
     public function detail($year)
@@ -113,18 +122,19 @@ class TimelineController extends BaseController
 
     public function update($id)
     {
+        $validation = service('validation');
         if ($this->request->getVar('year') == $this->request->getVar('yearOld')) {
             $rule = $this->timeline->getTimeline(session()->get('id'), $this->request->getVar('year')) != null;
         }
-        $this->validator->setRules(
+        $validation->setRules(
             [
                 'year' => [
                     'required',
-                    static fn($value) => $rule,
+                    static fn() => $rule,
                 ],
-                'image_1' => 'required|is_image[image]|mime_in[image,image/jpg,image/jpeg,image/png,image/heic]',
-                'image_2' => 'required|is_image[image]|mime_in[image,image/jpg,image/jpeg,image/png,image/heic]',
-                'image_3' => 'required|is_image[image]|mime_in[image,image/jpg,image/jpeg,image/png,image/heic]',
+                'image_1' => 'required|is_image[image_1]|mime_in[image_1,image/jpg,image/jpeg,image/png,image/heic]',
+                'image_2' => 'required|is_image[image_2]|mime_in[image_2,image/jpg,image/jpeg,image/png,image/heic]',
+                'image_3' => 'required|is_image[image_3]|mime_in[image_3,image/jpg,image/jpeg,image/png,image/heic]',
             ],
             [
                 'year' => [
@@ -148,12 +158,12 @@ class TimelineController extends BaseController
                 ],
             ]
         );
-        if ($this->validator->run([
+        if ($validation->run([
             'year'   => $this->request->getVar('year'),
-            'image_1' => $this->request->getFile('image_1'),
-            'image_2' => $this->request->getFile('image_2'),
-            'image_3' => $this->request->getFile('image_3'),
-        ])) return redirect()->to('')->withInput();
+            'image_1' => $this->request->getPost('image_1'),
+            'image_2' => $this->request->getPost('image_2'),
+            'image_3' => $this->request->getPost('image_3'),
+        ])) return redirect()->back()->withInput();
 
         // 1
         $imageFile1 = $this->request->getFile('image_1');
@@ -182,10 +192,6 @@ class TimelineController extends BaseController
             $imageFile3->move('assets/img/timeline', $imageName3);
             unlink('assets/img/timeline/' . $this->request->getVar('imageNameLama3'));
         }
-
-
-
-
 
         $this->timeline->save([
             'id' => $id,
