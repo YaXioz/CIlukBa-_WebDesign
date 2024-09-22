@@ -46,13 +46,18 @@ button {
     background: #00ebfc;
     font-size: 17px;
     font-weight: 500;
-    color: #2f00ff;
-    border: 3px solid #038dff;
+    color: #00ebfc;
+    border: 3px solid #00ebfc;
     border-radius: 8px;
-    box-shadow: 0 0 0 #00ebfc;
+    box-shadow: 0 0 0 #0043fc;
     transition: all 0.3s ease-in-out;
     cursor: pointer;
     margin: 0;
+}
+
+a {
+    color: rgb(255, 255, 255);
+    text-decoration: none;
 }
   
 .star-1 {
